@@ -1,0 +1,114 @@
+<%#
+  Finland Ice Hockey Tournament Platform
+  File: views/pages/teams.ejs
+  Author: Usman Zulfiqar (Team Module, Full Stack)
+  Purpose: Teams listing page with search bar and sort options
+%>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <% const title = 'Teams · Finland Ice Hockey'; %>
+  <%- include('../partials/head', { title }) %>
+</head>
+<body>
+  <%- include('../partials/navbar', { page, user: typeof user !== 'undefined' ? user : null }) %>
+
+  <main>
+    <section class="page-banner">
+      <div class="container page-banner__inner" style="display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); flex-wrap: wrap;">
+        <div>
+          <h1>Teams</h1>
+          <p>Finland's competing ice hockey teams.</p>
+        </div>
+        <a href="/teams/new" class="btn btn-secondary">
+          <i class="fa-solid fa-plus" aria-hidden="true"></i>
+          Create Team
+        </a>
+      </div>
+    </section>
+
+    <section class="section section--tight">
+      <div class="container">
+        <div class="toolbar">
+          <div class="toolbar__search">
+            <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+            <input type="search" id="teamSearch" placeholder="Search teams or regions..." aria-label="Search teams" />
+          </div>
+          <select id="teamSort" aria-label="Sort">
+            <option value="wins">Most wins</option>
+            <option value="players">Most players</option>
+            <option value="name">Name (A-Z)</option>
+          </select>
+        </div>
+
+        <% if (!teams.length) { %>
+          <div class="empty">
+            <div class="empty__icon"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i></div>
+            <div class="empty__title">No teams yet</div>
+            <p class="empty__hint">Be the first to put a roster on the ice. Create your team and start recruiting players.</p>
+            <a href="/teams/new" class="btn btn-primary empty__cta">
+              <i class="fa-solid fa-plus" aria-hidden="true"></i>
+              Create Team
+            </a>
+          </div>
+        <% } else { %>
+          <div class="grid grid-4" id="teamGrid">
+            <% teams.forEach(function(t) { %>
+              <a href="/teams/<%= t._id %>" class="card team-card fade-in"
+                data-name="<%= t.name.toLowerCase() %>"
+                data-region="<%= t.region.toLowerCase() %>"
+                data-wins="<%= t.wins %>"
+                data-players="<%= t.players ? t.players.length : 0 %>"
+                style="text-decoration: none; color: inherit;">
+                <div class="team-card__logo" aria-hidden="true"><%= t.initials %></div>
+                <div>
+                  <div class="team-card__name"><%= t.name %></div>
+                  <div class="team-card__meta">
+                    <span><i class="fa-solid fa-location-dot" aria-hidden="true"></i>&nbsp; <%= t.region %></span>
+                    <% if (t.captain && t.captain.name) { %>
+                      <span><i class="fa-solid fa-user-tie" aria-hidden="true"></i>&nbsp; <%= t.captain.name %></span>
+                    <% } %>
+                  </div>
+                </div>
+                <div class="team-card__stats">
+                  <div class="team-card__stat"><strong><%= t.players ? t.players.length : 0 %></strong><span>Players</span></div>
+                  <div class="team-card__stat"><strong><%= t.wins %></strong><span>Wins</span></div>
+                  <div class="team-card__stat"><strong><%= t.losses %></strong><span>Losses</span></div>
+                </div>
+              </a>
+            <% }) %>
+          </div>
+        <% } %>
+      </div>
+    </section>
+  </main>
+
+  <%- include('../partials/footer') %>
+  <script src="/js/main.js" defer></script>
+  <script>
+    (function () {
+      const search = document.getElementById('teamSearch');
+      const sort = document.getElementById('teamSort');
+      const grid = document.getElementById('teamGrid');
+      if (!grid) return;
+
+      function apply() {
+        const q = search.value.trim().toLowerCase();
+        let cards = Array.from(grid.querySelectorAll('.team-card'));
+        cards.forEach(c => {
+          const show = !q || c.dataset.name.includes(q) || c.dataset.region.includes(q);
+          c.style.display = show ? '' : 'none';
+        });
+        const v = sort.value;
+        cards.sort((a, b) => {
+          if (v === 'name') return a.dataset.name.localeCompare(b.dataset.name);
+          if (v === 'players') return Number(b.dataset.players) - Number(a.dataset.players);
+          return Number(b.dataset.wins) - Number(a.dataset.wins);
+        });
+        cards.forEach(c => grid.appendChild(c));
+      }
+      [search, sort].forEach(el => el.addEventListener('input', apply));
+    })();
+  </script>
+</body>
+</html>

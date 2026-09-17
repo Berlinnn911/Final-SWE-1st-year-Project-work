@@ -1,0 +1,185 @@
+<%#
+  Finland Ice Hockey Tournament Platform
+  File: views/pages/tournament-detail.ejs
+  Author: Awais (Tournament Module, Full Stack)
+  Purpose: Single tournament page with about, details, rules, registered teams,
+           organizer info, organizer delete control and the registration side panel.
+%>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <% const title = tournament.title + ' · Finland Ice Hockey'; %>
+  <%- include('../partials/head', { title }) %>
+</head>
+<body>
+  <%- include('../partials/navbar', { page, user: typeof user !== 'undefined' ? user : null }) %>
+
+  <main>
+    <section class="page-banner page-banner--with-photo">
+      <div class="page-banner__bg" style="background-image: url('<%= tournament.bannerImage || 'https://images.unsplash.com/photo-1735728779121-7a00e40d598f?w=1600&q=80&auto=format&fit=crop' %>');" aria-hidden="true"></div>
+      <div class="container page-banner__inner">
+        <span class="tournament-card__badge <%= tournament.status === 'Closing Soon' ? 'tournament-card__badge--warn' : '' %>" style="position: static; display: inline-block; margin-bottom: var(--space-1);"><%= tournament.status %></span>
+        <h1><%= tournament.title %></h1>
+        <p>
+          <i class="fa-solid fa-location-dot" aria-hidden="true"></i> <%= tournament.location %>
+          &nbsp;·&nbsp;
+          <i class="fa-regular fa-calendar" aria-hidden="true"></i>
+          <%= tournament.startDate.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) %>
+          to
+          <%= tournament.endDate.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) %>
+        </p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="detail">
+          <div class="detail__main">
+            <% if (tournament.description) { %>
+              <div class="detail__card">
+                <h3>About</h3>
+                <p><%= tournament.description %></p>
+              </div>
+            <% } %>
+
+            <div class="detail__card">
+              <h3>Tournament Details</h3>
+              <div class="detail__meta-list">
+                <div class="detail__meta">
+                  <span class="detail__meta-label">Format</span>
+                  <span class="detail__meta-value"><%= tournament.format.split('-').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ') %></span>
+                </div>
+                <div class="detail__meta">
+                  <span class="detail__meta-label">Registration Deadline</span>
+                  <span class="detail__meta-value"><%= tournament.registrationDeadline.toLocaleDateString('en-GB') %></span>
+                </div>
+                <div class="detail__meta">
+                  <span class="detail__meta-label">Entry Fee</span>
+                  <span class="detail__meta-value"><%= tournament.entryFee > 0 ? '€' + tournament.entryFee : 'Free' %></span>
+                </div>
+                <div class="detail__meta">
+                  <span class="detail__meta-label">Max Teams</span>
+                  <span class="detail__meta-value"><%= tournament.maxTeams %></span>
+                </div>
+              </div>
+            </div>
+
+            <% if (tournament.rules) { %>
+              <div class="detail__card">
+                <h3>Rules</h3>
+                <ul class="detail__rules">
+                  <% tournament.rules.split('\n').filter(r => r.trim()).forEach(function(rule) { %>
+                    <li><%= rule.trim() %></li>
+                  <% }) %>
+                </ul>
+              </div>
+            <% } %>
+
+            <div class="detail__card">
+              <h3>Registered Teams (<%= tournament.registeredTeams.length %>)</h3>
+              <% if (tournament.registeredTeams.length === 0) { %>
+                <p style="color: var(--text-muted);">No teams registered yet. Be the first.</p>
+              <% } else { %>
+                <div class="detail__teams">
+                  <% tournament.registeredTeams.forEach(function(t) { %>
+                    <a href="/teams/<%= t._id %>" class="detail__team-chip">
+                      <span class="detail__team-chip-avatar"><%= t.name.split(/\s+/).map(w => w.charAt(0).toUpperCase()).slice(0,2).join('') %></span>
+                      <%= t.name %>
+                    </a>
+                  <% }) %>
+                </div>
+              <% } %>
+            </div>
+
+            <div class="detail__card">
+              <h3>Organizer</h3>
+              <div style="display: flex; align-items: center; gap: var(--space-2);">
+                <div class="list-row__avatar"><%= tournament.organizer.name.charAt(0).toUpperCase() %></div>
+                <div>
+                  <div style="font-weight: 700;"><%= tournament.organizer.name %></div>
+                  <div style="color: var(--text-muted); font-size: 13px;"><%= tournament.organizer.email %></div>
+                </div>
+              </div>
+            </div>
+
+            <% if (isOrganizer) { %>
+              <div class="detail__card" style="border-top: 4px solid var(--error-red);">
+                <h3>Organizer Controls</h3>
+                <p style="margin-bottom: var(--space-2);">As the organizer, you can delete this tournament.</p>
+                <form action="/tournaments/<%= tournament._id %>/delete" method="POST" onsubmit="return confirm('Delete this tournament? This cannot be undone.');">
+                  <button type="submit" class="btn btn-danger">
+                    <i class="fa-solid fa-trash" aria-hidden="true"></i>
+                    Delete Tournament
+                  </button>
+                </form>
+              </div>
+            <% } %>
+          </div>
+
+          <aside>
+            <div class="reg-panel">
+              <h3>Register Your Team</h3>
+              <% if (tournament.entryFee > 0) { %>
+                <div class="price">€<%= tournament.entryFee %> <small>/ team</small></div>
+              <% } else { %>
+                <div class="price">Free</div>
+              <% } %>
+
+              <div class="capacity">
+                <div class="capacity__label">
+                  <span><%= tournament.registeredTeams.length %> of <%= tournament.maxTeams %> teams</span>
+                  <span><%= Math.round((tournament.registeredTeams.length / tournament.maxTeams) * 100) %>%</span>
+                </div>
+                <div class="capacity__bar">
+                  <div class="capacity__fill" style="width: <%= Math.min(100, Math.round((tournament.registeredTeams.length / tournament.maxTeams) * 100)) %>%;"></div>
+                </div>
+              </div>
+
+              <ul>
+                <li><i class="fa-solid fa-check" aria-hidden="true"></i> Captain registers the team</li>
+                <li><i class="fa-solid fa-check" aria-hidden="true"></i> One registration per team</li>
+                <li><i class="fa-solid fa-check" aria-hidden="true"></i> Deadline: <%= tournament.registrationDeadline.toLocaleDateString('en-GB') %></li>
+              </ul>
+
+              <% if (tournament.status === 'Closed' || tournament.status === 'Cancelled') { %>
+                <button class="btn btn-primary btn-lg" disabled>Registration Closed</button>
+              <% } else if (!userTeams || userTeams.length === 0) { %>
+                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 10px;">You must be a team captain to register a team.</p>
+                <a href="/teams/new" class="btn btn-secondary btn-lg" style="width: 100%;">Create a Team</a>
+              <% } else { %>
+                <form action="/tournaments/<%= tournament._id %>/register" method="POST">
+                  <div class="field">
+                    <label class="field__label" for="teamId">Choose your team</label>
+                    <select class="input" id="teamId" name="teamId" required>
+                      <% userTeams.forEach(function(t) { %>
+                        <option value="<%= t._id %>" <%= registeredTeamIds.has(String(t._id)) ? 'disabled' : '' %>>
+                          <%= t.name %><%= registeredTeamIds.has(String(t._id)) ? ' (already registered)' : '' %>
+                        </option>
+                      <% }) %>
+                    </select>
+                  </div>
+                  <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;">Register Team</button>
+                </form>
+
+                <% userTeams.forEach(function(t) { %>
+                  <% if (registeredTeamIds.has(String(t._id))) { %>
+                    <form action="/tournaments/<%= tournament._id %>/unregister" method="POST" style="margin-top: 8px;">
+                      <input type="hidden" name="teamId" value="<%= t._id %>" />
+                      <button type="submit" class="btn btn-ghost btn-sm" style="width: 100%; color: var(--error-red); border-color: var(--error-red);">
+                        Unregister <%= t.name %>
+                      </button>
+                    </form>
+                  <% } %>
+                <% }) %>
+              <% } %>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <%- include('../partials/footer') %>
+  <script src="/js/main.js" defer></script>
+</body>
+</html>

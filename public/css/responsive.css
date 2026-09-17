@@ -1,0 +1,267 @@
+﻿/* ==========================================================================
+   Finland Ice Hockey Tournament Platform - Responsive
+   File: public/css/responsive.css
+   Author: Rayyan Shakeel (Frontend Designer and UI Foundation)
+   Purpose: Mobile first responsive overrides. Breakpoints used: 1440 (large
+            desktop), 1024 (tablet / small desktop), 900 (navbar collapse),
+            768 (tablet), 640 (large mobile) and 480 (mobile).
+   ========================================================================== */
+
+/* Large desktop refinements */
+@media (max-width: 1440px) {
+  :root {
+    --max-width: 1140px;
+  }
+}
+
+/* Tablet & small desktop */
+@media (max-width: 1024px) {
+  h1 { font-size: 44px; }
+  h2 { font-size: 30px; }
+
+  .hero { min-height: 540px; }
+  .hero__content h1 { font-size: 52px; }
+
+  .detail {
+    grid-template-columns: 1fr;
+  }
+
+  .reg-panel {
+    position: static;
+  }
+
+  .dash-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .footer__grid {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+  }
+}
+
+/* Tablet · collapse navbar to hamburger */
+@media (max-width: 900px) {
+  .navbar__toggle {
+    display: flex;
+  }
+
+  .navbar__links {
+    position: absolute;
+    top: var(--navbar-height);
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    background: var(--finland-blue);
+    padding: var(--space-2) var(--space-3) var(--space-3);
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    transform: translateY(-12px);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform var(--transition), opacity var(--transition);
+    box-shadow: var(--shadow-nav);
+  }
+
+  .navbar.is-open .navbar__links {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .navbar__link {
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: left;
+  }
+
+  .navbar__link:last-child {
+    border-bottom: none;
+  }
+
+  .navbar__link::after {
+    display: none;
+  }
+
+  .navbar__user {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-1);
+    padding-top: var(--space-2);
+  }
+
+  .navbar__user-chip {
+    justify-content: flex-start;
+    padding: 10px 12px;
+  }
+
+  .navbar__signout-form,
+  .navbar__signout-form .btn {
+    width: 100%;
+  }
+}
+
+/* Tablet (768px) */
+@media (max-width: 768px) {
+  :root {
+    --space-6: 48px;
+    --space-5: 36px;
+  }
+
+  h1 { font-size: 36px; }
+  h2 { font-size: 26px; }
+  h3 { font-size: 20px; }
+
+  .section {
+    padding-block: var(--space-5);
+  }
+
+  .hero {
+    min-height: 480px;
+  }
+
+  .hero__content h1 {
+    font-size: 40px;
+  }
+
+  .auth {
+    grid-template-columns: 1fr;
+  }
+
+  .auth__photo-side {
+    min-height: 200px;
+    order: -1;
+  }
+
+  .dashboard {
+    grid-template-columns: 1fr;
+  }
+
+  .page-banner h1 { font-size: 32px; }
+
+  .detail__meta-list {
+    grid-template-columns: 1fr;
+  }
+
+  .grid-3,
+  .grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  /* Toolbar — stack search above selects, full-width controls */
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .toolbar__search { min-width: 0; }
+  .toolbar select { width: 100%; }
+
+  /* Page banner action button drops below title row */
+  .page-banner__inner {
+    flex-direction: column;
+    align-items: flex-start !important;
+  }
+  .page-banner__inner .btn { align-self: stretch; }
+
+  .footer__grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+  }
+
+  .footer__bottom {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+/* Large mobile (640px) */
+@media (max-width: 640px) {
+  .navbar__actions .btn {
+    display: none;
+  }
+
+  .navbar.is-open .navbar__links .btn {
+    display: inline-flex;
+  }
+
+  .navbar.is-open .navbar__links {
+    gap: var(--space-1);
+  }
+
+  .navbar.is-open .navbar__links .btn {
+    width: 100%;
+    margin-top: var(--space-1);
+  }
+}
+
+/* Mobile (480px) */
+@media (max-width: 480px) {
+  h1 { font-size: 30px; }
+  h2 { font-size: 22px; }
+
+  .container {
+    padding-inline: var(--space-2);
+  }
+
+  .grid-3,
+  .grid-4 {
+    grid-template-columns: 1fr;
+  }
+
+  .btn {
+    padding: 12px 22px;
+    font-size: 14px;
+  }
+
+  .btn-lg {
+    padding: 14px 28px;
+  }
+
+  .hero { min-height: 420px; }
+  .hero__content h1 { font-size: 32px; }
+
+  .dash-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .tournament-card__image {
+    height: 160px;
+  }
+
+  /* Roster collapses to single column at very narrow widths */
+  .roster {
+    grid-template-columns: 1fr;
+  }
+
+  /* Team-detail banner avatar shrinks so title gets breathing room */
+  .page-banner .team-card__logo {
+    width: 64px !important;
+    height: 64px !important;
+    font-size: 22px !important;
+  }
+
+  /* Flash stack fits screen width */
+  .flash-stack {
+    left: 8px;
+    right: 8px;
+    max-width: none;
+  }
+}
+
+/* Reduced motion (accessibility) */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

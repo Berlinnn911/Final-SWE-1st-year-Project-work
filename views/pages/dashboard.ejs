@@ -1,0 +1,149 @@
+<%#
+  Finland Ice Hockey Tournament Platform
+  File: views/pages/dashboard.ejs
+  Author: Muhammad Abdullah (Authentication and User Profile)
+  Purpose: Logged in landing page showing the user's teams, registered
+           tournaments, stats and recent activity.
+%>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <% const title = 'Dashboard · Finland Ice Hockey'; %>
+  <%- include('../partials/head', { title }) %>
+</head>
+<body>
+  <%- include('../partials/navbar', { page, user: typeof user !== 'undefined' ? user : null }) %>
+
+  <main>
+    <section class="page-banner">
+      <div class="container page-banner__inner">
+        <h1>Welcome back, <%= user.name %>.</h1>
+        <p>Your teams, tournaments, and updates at a glance.</p>
+      </div>
+    </section>
+
+    <section class="section section--tight">
+      <div class="container">
+        <div class="dash-stats">
+          <div class="stat-card">
+            <div class="stat-card__icon"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i></div>
+            <div>
+              <div class="stat-card__num"><%= myTeams.length %></div>
+              <div class="stat-card__label">My Teams</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card__icon"><i class="fa-solid fa-trophy" aria-hidden="true"></i></div>
+            <div>
+              <div class="stat-card__num"><%= myTournaments.length %></div>
+              <div class="stat-card__label">Registered</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card__icon"><i class="fa-regular fa-calendar" aria-hidden="true"></i></div>
+            <div>
+              <div class="stat-card__num"><%= myTournaments.filter(t => new Date(t.startDate) > new Date()).length %></div>
+              <div class="stat-card__label">Upcoming</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card__icon"><i class="fa-solid fa-bell" aria-hidden="true"></i></div>
+            <div>
+              <div class="stat-card__num"><%= pendingRequestCount %></div>
+              <div class="stat-card__label">Join Requests</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dashboard">
+          <div class="dash-card">
+            <h3><i class="fa-solid fa-shield-halved" aria-hidden="true"></i> My Teams</h3>
+            <% if (myTeams.length === 0) { %>
+              <div class="empty empty--inline">
+                <div class="empty__icon"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i></div>
+                <div class="empty__title">No teams yet</div>
+                <p class="empty__hint">Create one or join an existing team to get started.</p>
+                <a href="/teams/new" class="btn btn-primary btn-sm empty__cta">Create Team</a>
+              </div>
+            <% } else { %>
+              <div>
+                <% myTeams.forEach(function(t) { %>
+                  <a href="/teams/<%= t._id %>" class="list-row" style="text-decoration: none; color: inherit;">
+                    <div class="list-row__avatar"><%= t.initials %></div>
+                    <div class="list-row__main">
+                      <div class="list-row__title">
+                        <%= t.name %>
+                        <% if (String(t.captain) === String(user._id)) { %>
+                          <span style="font-size: 10px; background: var(--finland-blue); color: white; padding: 2px 6px; border-radius: 999px; margin-left: 4px;">CAPTAIN</span>
+                        <% } %>
+                      </div>
+                      <div class="list-row__meta"><%= t.players ? t.players.length : 0 %> players · <%= t.region %></div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right" aria-hidden="true" style="color: var(--text-muted);"></i>
+                  </a>
+                <% }) %>
+              </div>
+              <a href="/teams" class="btn btn-secondary btn-sm" style="align-self: flex-start; margin-top: var(--space-1);">View All Teams</a>
+            <% } %>
+          </div>
+
+          <div class="dash-card">
+            <h3><i class="fa-solid fa-trophy" aria-hidden="true"></i> Registered Tournaments</h3>
+            <% if (myTournaments.length === 0) { %>
+              <div class="empty empty--inline">
+                <div class="empty__icon"><i class="fa-solid fa-trophy" aria-hidden="true"></i></div>
+                <div class="empty__title">No registrations</div>
+                <p class="empty__hint">Your teams haven't entered any tournaments yet.</p>
+                <a href="/tournaments" class="btn btn-primary btn-sm empty__cta">Browse Tournaments</a>
+              </div>
+            <% } else { %>
+              <div>
+                <% myTournaments.forEach(function(t) { %>
+                  <a href="/tournaments/<%= t._id %>" class="list-row" style="text-decoration: none; color: inherit;">
+                    <div class="list-row__avatar"><i class="fa-solid fa-trophy" aria-hidden="true"></i></div>
+                    <div class="list-row__main">
+                      <div class="list-row__title"><%= t.title %></div>
+                      <div class="list-row__meta"><%= new Date(t.startDate).toLocaleDateString('en-GB') %> · <%= t.location %></div>
+                    </div>
+                    <span class="tournament-card__badge <%= t.status === 'Closing Soon' ? 'tournament-card__badge--warn' : '' %>" style="position: static;"><%= t.status %></span>
+                  </a>
+                <% }) %>
+              </div>
+              <a href="/tournaments" class="btn btn-secondary btn-sm" style="align-self: flex-start; margin-top: var(--space-1);">Browse Tournaments</a>
+            <% } %>
+          </div>
+
+          <% if (user.role === 'organizer' || user.role === 'admin') { %>
+            <div class="dash-card" style="border-top: 4px solid var(--finland-blue);">
+              <h3><i class="fa-solid fa-plus" aria-hidden="true"></i> Organizer Actions</h3>
+              <p>Create and manage tournaments for the community.</p>
+              <a href="/tournaments/new" class="btn btn-primary btn-sm" style="align-self: flex-start;">Create Tournament</a>
+            </div>
+          <% } %>
+
+          <div class="dash-card">
+            <h3><i class="fa-solid fa-bell" aria-hidden="true"></i> Recent Activity</h3>
+            <% if (pendingRequestCount > 0) { %>
+              <div class="notif">
+                <span class="notif__dot"></span>
+                <div>
+                  <div class="notif__title"><%= pendingRequestCount %> player join request<%= pendingRequestCount === 1 ? '' : 's' %> pending</div>
+                  <div class="notif__time">Review on each team page</div>
+                </div>
+              </div>
+            <% } %>
+            <% if (myTeams.length === 0 && myTournaments.length === 0) { %>
+              <p style="color: var(--text-muted);">No activity yet. Get started by creating a team or joining one.</p>
+            <% } else if (pendingRequestCount === 0) { %>
+              <p style="color: var(--text-muted);">All caught up.</p>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <%- include('../partials/footer') %>
+  <script src="/js/main.js" defer></script>
+</body>
+</html>

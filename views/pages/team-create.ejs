@@ -1,0 +1,60 @@
+<%#
+  Finland Ice Hockey Tournament Platform
+  File: views/pages/team-create.ejs
+  Author: Usman Zulfiqar (Team Module, Full Stack)
+  Purpose: Create team form. The creator automatically becomes the captain.
+%>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <% const title = 'Create Team · Finland Ice Hockey'; %>
+  <%- include('../partials/head', { title }) %>
+</head>
+<body>
+  <%- include('../partials/navbar', { page, user: typeof user !== 'undefined' ? user : null }) %>
+
+  <main>
+    <section class="page-banner">
+      <div class="container page-banner__inner">
+        <h1>Create Team</h1>
+        <p>You will automatically become the captain.</p>
+      </div>
+    </section>
+
+    <section class="section section--tight">
+      <div class="container" style="max-width: 600px; margin-inline: auto;">
+        <% if (error) { %>
+          <div class="alert alert--error">
+            <i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i> <%= error %>
+          </div>
+        <% } %>
+
+        <form action="/teams" method="POST" class="detail__card">
+          <div class="field">
+            <label class="field__label" for="name">Team Name *</label>
+            <input class="input" type="text" id="name" name="name" value="<%= values.name || '' %>" placeholder="Helsinki Frost" required minlength="2" maxlength="60" />
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="region">Region *</label>
+            <input class="input" type="text" id="region" name="region" value="<%= values.region || '' %>" placeholder="Helsinki" required maxlength="80" />
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="description">Description</label>
+            <textarea class="input" id="description" name="description" rows="4" placeholder="Tell people about your team..." maxlength="800"><%= values.description || '' %></textarea>
+          </div>
+
+          <div style="display: flex; gap: var(--space-1); justify-content: flex-end;">
+            <a href="/teams" class="btn btn-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary">Create Team</button>
+          </div>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <%- include('../partials/footer') %>
+  <script src="/js/main.js" defer></script>
+</body>
+</html>

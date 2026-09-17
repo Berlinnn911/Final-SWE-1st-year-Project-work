@@ -1,0 +1,108 @@
+<%#
+  Finland Ice Hockey Tournament Platform
+  File: views/pages/tournament-create.ejs
+  Author: Awais (Tournament Module, Full Stack)
+  Purpose: Create tournament form. Visible only to organizers and admins.
+%>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <% const title = 'Create Tournament · Finland Ice Hockey'; %>
+  <%- include('../partials/head', { title }) %>
+</head>
+<body>
+  <%- include('../partials/navbar', { page, user: typeof user !== 'undefined' ? user : null }) %>
+
+  <main>
+    <section class="page-banner">
+      <div class="container page-banner__inner">
+        <h1>Create Tournament</h1>
+        <p>Set the details. Teams can register once the tournament is live.</p>
+      </div>
+    </section>
+
+    <section class="section section--tight">
+      <div class="container" style="max-width: 760px; margin-inline: auto;">
+        <% if (error) { %>
+          <div class="alert alert--error">
+            <i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i> <%= error %>
+          </div>
+        <% } %>
+
+        <form action="/tournaments" method="POST" class="detail__card">
+          <div class="field">
+            <label class="field__label" for="title">Tournament Title *</label>
+            <input class="input" type="text" id="title" name="title" value="<%= values.title || '' %>" placeholder="Helsinki Winter Classic" required maxlength="120" />
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="description">Description</label>
+            <textarea class="input" id="description" name="description" rows="3" placeholder="Briefly describe the tournament..." maxlength="2000"><%= values.description || '' %></textarea>
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="location">Location *</label>
+            <input class="input" type="text" id="location" name="location" value="<%= values.location || '' %>" placeholder="Helsinki, Finland" required maxlength="120" />
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2);">
+            <div class="field">
+              <label class="field__label" for="startDate">Start Date *</label>
+              <input class="input" type="date" id="startDate" name="startDate" value="<%= values.startDate || '' %>" required />
+            </div>
+            <div class="field">
+              <label class="field__label" for="endDate">End Date *</label>
+              <input class="input" type="date" id="endDate" name="endDate" value="<%= values.endDate || '' %>" required />
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2);">
+            <div class="field">
+              <label class="field__label" for="registrationDeadline">Registration Deadline *</label>
+              <input class="input" type="date" id="registrationDeadline" name="registrationDeadline" value="<%= values.registrationDeadline || '' %>" required />
+            </div>
+            <div class="field">
+              <label class="field__label" for="maxTeams">Max Teams *</label>
+              <input class="input" type="number" id="maxTeams" name="maxTeams" value="<%= values.maxTeams || 16 %>" min="2" max="64" required />
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2);">
+            <div class="field">
+              <label class="field__label" for="format">Format</label>
+              <select class="input" id="format" name="format">
+                <option value="single-elimination" <%= values.format === 'single-elimination' ? 'selected' : '' %>>Single Elimination</option>
+                <option value="double-elimination" <%= values.format === 'double-elimination' ? 'selected' : '' %>>Double Elimination</option>
+                <option value="round-robin" <%= values.format === 'round-robin' ? 'selected' : '' %>>Round Robin</option>
+                <option value="group-stage" <%= values.format === 'group-stage' ? 'selected' : '' %>>Group Stage</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="field__label" for="entryFee">Entry Fee (EUR)</label>
+              <input class="input" type="number" id="entryFee" name="entryFee" value="<%= values.entryFee || 0 %>" min="0" step="10" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="bannerImage">Banner Image URL (optional)</label>
+            <input class="input" type="url" id="bannerImage" name="bannerImage" value="<%= values.bannerImage || '' %>" placeholder="https://..." />
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="rules">Rules</label>
+            <textarea class="input" id="rules" name="rules" rows="4" placeholder="One rule per line..." maxlength="4000"><%= values.rules || '' %></textarea>
+          </div>
+
+          <div style="display: flex; gap: var(--space-1); justify-content: flex-end;">
+            <a href="/tournaments" class="btn btn-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary">Create Tournament</button>
+          </div>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <%- include('../partials/footer') %>
+  <script src="/js/main.js" defer></script>
+</body>
+</html>

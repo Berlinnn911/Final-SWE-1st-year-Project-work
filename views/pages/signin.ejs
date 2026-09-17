@@ -1,0 +1,72 @@
+﻿<%#
+  Finland Ice Hockey Tournament Platform
+  File: views/pages/signin.ejs
+  Authors: Awais (page design and UI code) and Muhammad Abdullah (form
+           integration with the auth controller)
+  Purpose: Sign in page. Two column layout: form on the left, photo on the right.
+%>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <% const title = 'Sign In · Finland Ice Hockey'; %>
+  <%- include('../partials/head', { title }) %>
+</head>
+<body>
+  <%- include('../partials/navbar', { page, user: typeof user !== 'undefined' ? user : null }) %>
+
+  <main>
+    <div class="auth">
+      <div class="auth__form-side">
+        <div class="auth__form fade-in">
+          <h1>Welcome back.</h1>
+          <p class="auth__lede">Sign in to manage your team and tournaments.</p>
+
+          <% if (error) { %>
+            <div class="alert alert--error">
+              <i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i>
+              <%= error %>
+            </div>
+          <% } %>
+
+          <form action="/signin" method="POST" novalidate>
+            <input type="hidden" name="next" value="<%= next %>" />
+
+            <div class="field">
+              <label class="field__label" for="email">Email</label>
+              <input class="input" type="email" id="email" name="email" placeholder="you@example.fi" required autofocus />
+            </div>
+
+            <div class="field">
+              <label class="field__label" for="password">Password</label>
+              <input class="input" type="password" id="password" name="password" placeholder="Your password" required minlength="6" />
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;">
+              Sign In
+              <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+            </button>
+          </form>
+
+          <p class="auth__foot">
+            New here? <a href="/signup">Create an account</a>
+          </p>
+        </div>
+      </div>
+
+      <aside
+        class="auth__photo-side"
+        style="background-image: url('https://images.unsplash.com/photo-1514511719-9f5849dc16d0?w=1400&q=80&auto=format&fit=crop');"
+        aria-hidden="true"
+      >
+        <div class="auth__photo-caption">
+          <h2>Step onto the ice.</h2>
+          <p>Finland's premier ice hockey tournament platform.</p>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <script src="/js/main.js" defer></script>
+  <script src="/js/validation.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,34 @@
+{
+  "name": "hockey-tournament",
+  "version": "1.0.0",
+  "description": "Finland Ice Hockey Tournament Registration Platform",
+  "author": "Rayyan Shakeel, Muhammad Abdullah, Usman Zulfiqar, Awais, Zawal",
+  "contributors": [
+    "Rayyan Shakeel (Frontend Designer and UI Foundation)",
+    "Muhammad Abdullah (Authentication and User Profile)",
+    "Usman Zulfiqar (Team Module, Full Stack)",
+    "Awais (Tournament Module, Full Stack; also Signup and Signin page design and UI code)",
+    "Zawal (Backend Architecture, Database and DevOps)"
+  ],
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon --ext js,mjs,cjs,json,ejs,css app.js",
+    "seed": "node utils/seed.js"
+  },
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "connect-mongo": "^6.0.0",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^17.4.2",
+    "ejs": "^3.1.10",
+    "express": "^4.21.2",
+    "express-session": "^1.19.0",
+    "express-validator": "^7.3.2",
+    "method-override": "^3.0.0",
+    "mongoose": "^9.6.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
+}

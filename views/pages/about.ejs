@@ -1,0 +1,51 @@
+﻿<%#
+  Finland Ice Hockey Tournament Platform
+  File: views/pages/about.ejs
+  Author: Rayyan Shakeel (Frontend Designer and UI Foundation)
+  Purpose: Public about page. Photo banner and two short info cards for
+           teams and organizers.
+%>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <% const title = 'About · Finland Ice Hockey'; %>
+  <%- include('../partials/head', { title }) %>
+</head>
+<body>
+  <%- include('../partials/navbar', { page, user: typeof user !== 'undefined' ? user : null }) %>
+
+  <main>
+    <section class="page-banner page-banner--with-photo">
+      <div class="page-banner__bg" style="background-image: url('https://images.unsplash.com/photo-1701361172842-b132f9b09948?w=1600&q=80&auto=format&fit=crop');" aria-hidden="true"></div>
+      <div class="container page-banner__inner">
+        <h1>About</h1>
+        <p>Built for the Finnish hockey community.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container" style="max-width: 760px; margin-inline: auto;">
+        <p style="font-size: 18px; line-height: 1.7;">
+          Finland Ice Hockey is the platform for organizing, registering, and managing ice hockey
+          tournaments across Finland · built around how Finnish teams actually play.
+        </p>
+
+        <div class="dashboard" style="margin-top: var(--space-5);">
+          <div class="dash-card">
+            <h3><i class="fa-solid fa-users" aria-hidden="true"></i> For Teams</h3>
+            <p>Manage your roster, captain controls, and tournament registrations in one place.</p>
+          </div>
+          <div class="dash-card">
+            <h3><i class="fa-solid fa-trophy" aria-hidden="true"></i> For Organizers</h3>
+            <p>Host tournaments, review team registrations, and publish schedules with live updates.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <%- include('../partials/footer') %>
+
+  <script src="/js/main.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,109 @@
+<%#
+  Finland Ice Hockey Tournament Platform
+  File: views/pages/home.ejs
+  Author: Rayyan Shakeel (Frontend Designer and UI Foundation)
+  Purpose: Public home page. Hero section with photo background, featured
+           tournaments grid and top teams grid.
+%>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <% const title = 'Finland Ice Hockey · Tournament Platform'; %>
+  <%- include('../partials/head', { title }) %>
+</head>
+<body>
+  <%- include('../partials/navbar', { page, user: typeof user !== 'undefined' ? user : null }) %>
+
+  <main>
+    <section class="hero">
+      <div class="hero__bg" style="background-image: url('https://images.unsplash.com/photo-1735728779121-7a00e40d598f?w=1920&q=80&auto=format&fit=crop');" aria-hidden="true"></div>
+      <div class="container hero__inner">
+        <div class="hero__content fade-in">
+          <h1>Finland's Ice Hockey Tournaments.</h1>
+          <p class="hero__subtitle">Compete. Register. Manage. One platform.</p>
+          <div class="hero__ctas">
+            <% if (user) { %>
+              <a href="/tournaments" class="btn btn-primary btn-lg">Browse Tournaments</a>
+              <a href="/teams" class="btn btn-ghost btn-lg">View Teams</a>
+            <% } else { %>
+              <a href="/signup" class="btn btn-primary btn-lg">Get Started</a>
+              <a href="/signin" class="btn btn-ghost btn-lg">Sign In</a>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <% if (tournaments && tournaments.length) { %>
+      <section class="section">
+        <div class="container">
+          <div class="section-header">
+            <div class="section-header__title"><h2>Featured Tournaments</h2></div>
+            <% if (user) { %>
+              <a href="/tournaments" class="btn btn-secondary btn-sm">View All <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+            <% } %>
+          </div>
+
+          <div class="grid grid-3">
+            <% tournaments.forEach(function(t) { %>
+              <article class="card tournament-card fade-in">
+                <div class="tournament-card__image" style="background-image: url('<%= t.bannerImage || 'https://images.unsplash.com/photo-1735728779121-7a00e40d598f?w=900&q=80&auto=format&fit=crop' %>'); background-size: cover; background-position: center;">
+                  <span class="tournament-card__badge <%= t.status === 'Closing Soon' ? 'tournament-card__badge--warn' : '' %>"><%= t.status %></span>
+                </div>
+                <div class="tournament-card__body">
+                  <h3 class="tournament-card__title"><%= t.title %></h3>
+                  <div class="tournament-card__meta">
+                    <div class="tournament-card__meta-row">
+                      <i class="fa-regular fa-calendar" aria-hidden="true"></i><%= t.formattedDate || t.startDate.toLocaleDateString('en-GB') %>
+                    </div>
+                    <div class="tournament-card__meta-row">
+                      <i class="fa-solid fa-location-dot" aria-hidden="true"></i><%= t.location %>
+                    </div>
+                  </div>
+                  <div class="tournament-card__footer">
+                    <span class="tournament-card__teams"><strong><%= t.registeredTeams.length %></strong> / <%= t.maxTeams %> teams</span>
+                    <a href="<%= user ? '/tournaments/' + t._id : '/signin' %>" class="btn btn-primary btn-sm">View</a>
+                  </div>
+                </div>
+              </article>
+            <% }) %>
+          </div>
+        </div>
+      </section>
+    <% } %>
+
+    <% if (teams && teams.length) { %>
+      <section class="section">
+        <div class="container">
+          <div class="section-header">
+            <div class="section-header__title"><h2>Top Teams</h2></div>
+            <% if (user) { %>
+              <a href="/teams" class="btn btn-secondary btn-sm">View All <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+            <% } %>
+          </div>
+
+          <div class="grid grid-4">
+            <% teams.forEach(function(t) { %>
+              <article class="card team-card fade-in">
+                <div class="team-card__logo" aria-hidden="true"><%= t.initials %></div>
+                <div>
+                  <div class="team-card__name"><%= t.name %></div>
+                  <div class="team-card__meta"><span><%= t.region %></span></div>
+                </div>
+                <div class="team-card__stats">
+                  <div class="team-card__stat"><strong><%= t.players ? t.players.length : 0 %></strong><span>Players</span></div>
+                  <div class="team-card__stat"><strong><%= t.wins %></strong><span>Wins</span></div>
+                </div>
+              </article>
+            <% }) %>
+          </div>
+        </div>
+      </section>
+    <% } %>
+  </main>
+
+  <%- include('../partials/footer') %>
+
+  <script src="/js/main.js" defer></script>
+</body>
+</html>

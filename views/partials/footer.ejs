@@ -1,0 +1,76 @@
+<%#
+  Finland Ice Hockey Tournament Platform
+  File: views/partials/footer.ejs
+  Author: Rayyan Shakeel (Frontend Designer and UI Foundation)
+  Purpose: Page footer with brand block, platform links, resources, contact
+           and the copyright row.
+%>
+<footer class="footer">
+  <div class="container">
+    <div class="footer__grid">
+      <div class="footer__brand">
+        <div class="footer__brand-row">
+          <span class="navbar__logo" aria-hidden="true">
+            <i class="fa-solid fa-hockey-puck"></i>
+          </span>
+          <span>Finland Ice Hockey</span>
+        </div>
+        <p>
+          The premier platform for organizing, joining, and managing ice hockey
+          tournaments across Finland. Built for players, teams, and organizers.
+        </p>
+        <div class="footer__social" aria-label="Social links">
+          <a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+          <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+          <a href="#" aria-label="Twitter"><i class="fa-brands fa-x-twitter"></i></a>
+          <a href="#" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
+        </div>
+      </div>
+
+      <div>
+        <h4 class="footer__heading">Platform</h4>
+        <ul class="footer__links">
+          <% if (user) { %>
+            <li><a href="/tournaments">Tournaments</a></li>
+            <li><a href="/teams">Teams</a></li>
+            <li><a href="/dashboard">Dashboard</a></li>
+          <% } else { %>
+            <li><a href="/signup">Sign Up</a></li>
+            <li><a href="/signin">Sign In</a></li>
+          <% } %>
+          <li><a href="/about">About Us</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="footer__heading">Resources</h4>
+        <ul class="footer__links">
+          <li><a href="#">Tournament Rules</a></li>
+          <li><a href="#">Organizer Guide</a></li>
+          <li><a href="#">Player Help</a></li>
+          <li><a href="#">FAQ</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="footer__heading">Contact</h4>
+        <ul class="footer__links">
+          <li><i class="fa-solid fa-envelope" aria-hidden="true"></i>&nbsp;support@finhockey.fi</li>
+          <li><i class="fa-solid fa-phone" aria-hidden="true"></i>&nbsp;+358 9 1234 5678</li>
+          <li><i class="fa-solid fa-location-dot" aria-hidden="true"></i>&nbsp;Helsinki, Finland</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <p class="footer__copy">
+        &copy; <%= new Date().getFullYear() %> Finland Ice Hockey. All rights reserved.
+      </p>
+      <div class="footer__legal">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Cookies</a>
+      </div>
+    </div>
+  </div>
+</footer>

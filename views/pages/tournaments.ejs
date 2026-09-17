@@ -1,0 +1,146 @@
+<%#
+  Finland Ice Hockey Tournament Platform
+  File: views/pages/tournaments.ejs
+  Author: Awais (Tournament Module, Full Stack)
+  Purpose: Tournaments listing page with search, status filter and sort
+%>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <% const title = 'Tournaments · Finland Ice Hockey'; %>
+  <%- include('../partials/head', { title }) %>
+</head>
+<body>
+  <%- include('../partials/navbar', { page, user: typeof user !== 'undefined' ? user : null }) %>
+
+  <main>
+    <section class="page-banner">
+      <div class="container page-banner__inner" style="display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); flex-wrap: wrap;">
+        <div>
+          <h1>Tournaments</h1>
+          <p>Browse and register for upcoming Finnish ice hockey events.</p>
+        </div>
+        <% if (user && (user.role === 'organizer' || user.role === 'admin')) { %>
+          <a href="/tournaments/new" class="btn btn-secondary">
+            <i class="fa-solid fa-plus" aria-hidden="true"></i>
+            Create Tournament
+          </a>
+        <% } %>
+      </div>
+    </section>
+
+    <section class="section section--tight">
+      <div class="container">
+        <div class="toolbar">
+          <div class="toolbar__search">
+            <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+            <input type="search" id="tournamentSearch" placeholder="Search by name or location..." aria-label="Search tournaments" />
+          </div>
+          <select id="filterStatus" aria-label="Filter by status">
+            <option value="all">All Status</option>
+            <option value="Open">Open</option>
+            <option value="Closing Soon">Closing Soon</option>
+            <option value="Closed">Closed</option>
+          </select>
+          <select id="sortBy" aria-label="Sort">
+            <option value="newest">Newest first</option>
+            <option value="oldest">Oldest first</option>
+            <option value="teams">Most teams</option>
+          </select>
+        </div>
+
+        <% if (!tournaments.length) { %>
+          <div class="empty">
+            <div class="empty__icon"><i class="fa-solid fa-trophy" aria-hidden="true"></i></div>
+            <div class="empty__title">No tournaments yet</div>
+            <p class="empty__hint">
+              <% if (user && (user.role === 'organizer' || user.role === 'admin')) { %>
+                Set up the first event of the season — pick a format, capacity, and registration deadline.
+              <% } else { %>
+                Nothing's scheduled right now. Check back soon, or reach out to your organizer.
+              <% } %>
+            </p>
+            <% if (user && (user.role === 'organizer' || user.role === 'admin')) { %>
+              <a href="/tournaments/new" class="btn btn-primary empty__cta">
+                <i class="fa-solid fa-plus" aria-hidden="true"></i>
+                Create Tournament
+              </a>
+            <% } %>
+          </div>
+        <% } else { %>
+          <div class="grid grid-3" id="tournamentGrid">
+            <% tournaments.forEach(function(t) { %>
+              <article class="card tournament-card fade-in"
+                data-status="<%= t.status %>"
+                data-name="<%= t.title.toLowerCase() %>"
+                data-location="<%= t.location.toLowerCase() %>"
+                data-teams="<%= t.registeredTeams.length %>"
+                data-date="<%= t.startDate.getTime() %>">
+                <div class="tournament-card__image" style="background-image: url('<%= t.bannerImage || 'https://images.unsplash.com/photo-1735728779121-7a00e40d598f?w=900&q=80&auto=format&fit=crop' %>'); background-size: cover; background-position: center;">
+                  <span class="tournament-card__badge <%= t.status === 'Closing Soon' ? 'tournament-card__badge--warn' : '' %>"><%= t.status %></span>
+                </div>
+                <div class="tournament-card__body">
+                  <h3 class="tournament-card__title"><%= t.title %></h3>
+                  <div class="tournament-card__meta">
+                    <div class="tournament-card__meta-row">
+                      <i class="fa-regular fa-calendar" aria-hidden="true"></i><%= t.formattedDate || t.startDate.toLocaleDateString('en-GB') %>
+                    </div>
+                    <div class="tournament-card__meta-row">
+                      <i class="fa-solid fa-location-dot" aria-hidden="true"></i><%= t.location %>
+                    </div>
+                  </div>
+                  <div class="tournament-card__footer">
+                    <span class="tournament-card__teams"><strong><%= t.registeredTeams.length %></strong> / <%= t.maxTeams %> teams</span>
+                    <a href="/tournaments/<%= t._id %>" class="btn btn-primary btn-sm">View</a>
+                  </div>
+                </div>
+              </article>
+            <% }) %>
+          </div>
+          <div id="emptyState" class="empty empty--inline" style="display:none;">
+            <div class="empty__icon"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></div>
+            <div class="empty__title">No matches</div>
+            <p class="empty__hint">No tournaments match your filters. Try clearing the search or switching status.</p>
+          </div>
+        <% } %>
+      </div>
+    </section>
+  </main>
+
+  <%- include('../partials/footer') %>
+
+  <script src="/js/main.js" defer></script>
+  <script>
+    (function () {
+      const search = document.getElementById('tournamentSearch');
+      const status = document.getElementById('filterStatus');
+      const sort = document.getElementById('sortBy');
+      const grid = document.getElementById('tournamentGrid');
+      const empty = document.getElementById('emptyState');
+      if (!grid) return;
+
+      function apply() {
+        const q = search.value.trim().toLowerCase();
+        const s = status.value;
+        let cards = Array.from(grid.querySelectorAll('.tournament-card'));
+        let visible = 0;
+        cards.forEach(c => {
+          const matchQ = !q || c.dataset.name.includes(q) || c.dataset.location.includes(q);
+          const matchS = s === 'all' || c.dataset.status === s;
+          const show = matchQ && matchS;
+          c.style.display = show ? '' : 'none';
+          if (show) visible++;
+        });
+        const sortVal = sort.value;
+        cards = cards.filter(c => c.style.display !== 'none');
+        if (sortVal === 'teams') cards.sort((a, b) => Number(b.dataset.teams) - Number(a.dataset.teams));
+        else if (sortVal === 'oldest') cards.sort((a, b) => Number(a.dataset.date) - Number(b.dataset.date));
+        else cards.sort((a, b) => Number(b.dataset.date) - Number(a.dataset.date));
+        cards.forEach(c => grid.appendChild(c));
+        if (empty) empty.style.display = visible === 0 ? 'block' : 'none';
+      }
+      [search, status, sort].forEach(el => el.addEventListener('input', apply));
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<%#
+  Finland Ice Hockey Tournament Platform
+  File: views/pages/error.ejs
+  Author: Rayyan Shakeel (Frontend Designer and UI Foundation)
+  Purpose: Shared error page used for 404, 403 and 500 responses. Renders
+           with a friendly message and Home or Back buttons.
+%>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <% const pageTitle = (status || 'Error') + ' · Finland Ice Hockey'; %>
+  <%- include('../partials/head', { title: pageTitle }) %>
+</head>
+<body>
+  <%- include('../partials/navbar', { page: '', user: typeof user !== 'undefined' ? user : null }) %>
+
+  <main class="error-page">
+    <div class="container error-page__inner">
+      <span class="eyebrow">Off the ice</span>
+      <div class="error-page__code" aria-hidden="true"><%= status || 'Error' %></div>
+      <h1 class="error-page__title">
+        <% if (status === 404) { %>
+          We couldn't find that page
+        <% } else if (status === 403) { %>
+          You don't have access to this page
+        <% } else { %>
+          Something went wrong
+        <% } %>
+      </h1>
+      <p class="error-page__message"><%= message || 'An unexpected error occurred.' %></p>
+      <div class="error-page__ctas">
+        <a href="/" class="btn btn-primary">
+          <i class="fa-solid fa-house" aria-hidden="true"></i>
+          Go Home
+        </a>
+        <a href="javascript:history.back()" class="btn btn-secondary">
+          <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+          Go Back
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <%- include('../partials/footer') %>
+</body>
+</html>

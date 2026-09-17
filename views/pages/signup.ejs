@@ -1,0 +1,94 @@
+<%#
+  Finland Ice Hockey Tournament Platform
+  File: views/pages/signup.ejs
+  Authors: Awais (page design and UI code) and Muhammad Abdullah (form
+           integration with the auth controller and role select)
+  Purpose: Sign up page. Collects name, email, age, location, role and password.
+%>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <% const title = 'Sign Up · Finland Ice Hockey'; %>
+  <%- include('../partials/head', { title }) %>
+</head>
+<body>
+  <%- include('../partials/navbar', { page, user: typeof user !== 'undefined' ? user : null }) %>
+
+  <main>
+    <div class="auth">
+      <aside class="auth__photo-side" style="background-image: url('https://images.unsplash.com/photo-1514511719-9f5849dc16d0?w=1400&q=80&auto=format&fit=crop');" aria-hidden="true">
+        <div class="auth__photo-caption">
+          <h2>Join the league.</h2>
+          <p>Create a team. Register for tournaments. All in one place.</p>
+        </div>
+      </aside>
+
+      <div class="auth__form-side">
+        <div class="auth__form fade-in">
+          <h1>Create account.</h1>
+          <p class="auth__lede">It only takes a minute.</p>
+
+          <% if (error) { %>
+            <div class="alert alert--error">
+              <i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i> <%= error %>
+            </div>
+          <% } %>
+
+          <form action="/signup" method="POST" novalidate>
+            <div class="field">
+              <label class="field__label" for="name">Full Name *</label>
+              <input class="input" type="text" id="name" name="name" value="<%= values.name || '' %>" placeholder="Aleksi Virtanen" required autofocus />
+            </div>
+
+            <div class="field">
+              <label class="field__label" for="email">Email *</label>
+              <input class="input" type="email" id="email" name="email" value="<%= values.email || '' %>" placeholder="you@example.fi" required />
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-1);">
+              <div class="field">
+                <label class="field__label" for="age">Age</label>
+                <input class="input" type="number" id="age" name="age" value="<%= values.age || '' %>" min="13" max="100" placeholder="18" />
+              </div>
+              <div class="field">
+                <label class="field__label" for="location">Location</label>
+                <input class="input" type="text" id="location" name="location" value="<%= values.location || '' %>" placeholder="Helsinki" maxlength="80" />
+              </div>
+            </div>
+
+            <div class="field">
+              <label class="field__label" for="role">I am a *</label>
+              <select class="input" id="role" name="role" required>
+                <option value="player" <%= values.role === 'player' || !values.role ? 'selected' : '' %>>Player (join or create teams)</option>
+                <option value="organizer" <%= values.role === 'organizer' ? 'selected' : '' %>>Organizer (create and run tournaments)</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label class="field__label" for="password">Password *</label>
+              <input class="input" type="password" id="password" name="password" placeholder="At least 8 characters" required minlength="8" />
+            </div>
+
+            <div class="field">
+              <label class="field__label" for="confirm">Confirm Password *</label>
+              <input class="input" type="password" id="confirm" name="confirm" placeholder="Re-enter password" required minlength="8" />
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;">
+              Create Account
+              <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+            </button>
+          </form>
+
+          <p class="auth__foot">
+            Already have an account? <a href="/signin">Sign in</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="/js/main.js" defer></script>
+  <script src="/js/validation.js" defer></script>
+</body>
+</html>

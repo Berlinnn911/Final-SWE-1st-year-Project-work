@@ -1,0 +1,33 @@
+<%#
+  Finland Ice Hockey Tournament Platform
+  File: views/partials/head.ejs
+  Author: Rayyan Shakeel (Frontend Designer and UI Foundation)
+  Purpose: Shared HTML head. Meta tags, fonts (Inter and Montserrat), Font
+           Awesome icons and the three project stylesheets.
+%>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="Finland Ice Hockey · Create teams, register for tournaments, and manage hockey events on Finland's premier ice hockey platform." />
+<meta name="theme-color" content="#003580" />
+<title><%= typeof title !== 'undefined' ? title : 'Finland Ice Hockey · Tournament Platform' %></title>
+
+<!-- Open Graph / Twitter -->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Finland Ice Hockey" />
+<meta property="og:title" content="<%= typeof title !== 'undefined' ? title : 'Finland Ice Hockey · Tournament Platform' %>" />
+<meta property="og:description" content="Create teams, register for tournaments, and manage hockey events on Finland's premier ice hockey platform." />
+<meta property="og:image" content="https://images.unsplash.com/photo-1735728779121-7a00e40d598f?w=1200&q=80&auto=format&fit=crop" />
+<meta name="twitter:card" content="summary_large_image" />
+
+<!-- Favicon (inline SVG: Finland blue puck with white "F") -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='%23003580'/><text x='50%25' y='54%25' text-anchor='middle' dominant-baseline='middle' font-family='Montserrat,Segoe UI,sans-serif' font-weight='800' font-size='42' fill='%23ffffff'>F</text></svg>" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@500;600;700;800&display=swap" rel="stylesheet" />
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" referrerpolicy="no-referrer" />
+
+<link rel="stylesheet" href="/css/style.css" />
+<link rel="stylesheet" href="/css/components.css" />
+<link rel="stylesheet" href="/css/responsive.css" />

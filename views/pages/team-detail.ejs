@@ -1,0 +1,181 @@
+<%#
+  Finland Ice Hockey Tournament Platform
+  File: views/pages/team-detail.ejs
+  Author: Usman Zulfiqar (Team Module, Full Stack)
+  Purpose: Single team page with roster, join request panel, captain
+           controls (approve, reject, kick, delete) and linked tournaments.
+%>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <% const title = team.name + ' · Finland Ice Hockey'; %>
+  <%- include('../partials/head', { title }) %>
+</head>
+<body>
+  <%- include('../partials/navbar', { page, user: typeof user !== 'undefined' ? user : null }) %>
+
+  <main>
+    <section class="page-banner">
+      <div class="container page-banner__inner" style="display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap;">
+        <div class="team-card__logo" style="width: 88px; height: 88px; font-size: 28px;"><%= team.initials %></div>
+        <div style="flex: 1;">
+          <h1 style="margin-bottom: 4px;"><%= team.name %></h1>
+          <p style="color: rgba(255,255,255,0.78);">
+            <i class="fa-solid fa-location-dot" aria-hidden="true"></i> <%= team.region %>
+            &nbsp;·&nbsp;
+            <i class="fa-solid fa-user-tie" aria-hidden="true"></i> Captain: <%= team.captain.name %>
+          </p>
+        </div>
+
+        <% if (!isMember && !isCaptain && !hasPendingRequest) { %>
+          <form action="/teams/<%= team._id %>/join" method="POST">
+            <button type="submit" class="btn btn-secondary">
+              <i class="fa-solid fa-user-plus" aria-hidden="true"></i>
+              Request to Join
+            </button>
+          </form>
+        <% } else if (hasPendingRequest) { %>
+          <span class="btn btn-secondary" style="cursor: default; opacity: 0.7;">
+            <i class="fa-solid fa-hourglass-half" aria-hidden="true"></i>
+            Request Pending
+          </span>
+        <% } else if (isMember && !isCaptain) { %>
+          <form action="/teams/<%= team._id %>/leave" method="POST" onsubmit="return confirm('Leave this team?');">
+            <button type="submit" class="btn btn-ghost">
+              <i class="fa-solid fa-arrow-right-from-bracket" aria-hidden="true"></i>
+              Leave Team
+            </button>
+          </form>
+        <% } %>
+      </div>
+    </section>
+
+    <section class="section section--tight">
+      <div class="container">
+        <div class="dash-stats">
+          <div class="stat-card">
+            <div class="stat-card__icon"><i class="fa-solid fa-users" aria-hidden="true"></i></div>
+            <div>
+              <div class="stat-card__num"><%= team.players.length %></div>
+              <div class="stat-card__label">Players</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card__icon"><i class="fa-solid fa-trophy" aria-hidden="true"></i></div>
+            <div>
+              <div class="stat-card__num"><%= team.wins %></div>
+              <div class="stat-card__label">Wins</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card__icon"><i class="fa-solid fa-xmark" aria-hidden="true"></i></div>
+            <div>
+              <div class="stat-card__num"><%= team.losses %></div>
+              <div class="stat-card__label">Losses</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card__icon"><i class="fa-solid fa-percent" aria-hidden="true"></i></div>
+            <div>
+              <div class="stat-card__num">
+                <% const totalMatches = team.wins + team.losses; %>
+                <%= totalMatches > 0 ? Math.round((team.wins / totalMatches) * 100) : 0 %>%
+              </div>
+              <div class="stat-card__label">Win Rate</div>
+            </div>
+          </div>
+        </div>
+
+        <% if (team.description) { %>
+          <div class="detail__card" style="margin-bottom: var(--space-3);">
+            <h3>About</h3>
+            <p><%= team.description %></p>
+          </div>
+        <% } %>
+
+        <% if (isCaptain && team.joinRequests && team.joinRequests.length > 0) { %>
+          <div class="detail__card" style="margin-bottom: var(--space-3); border-top: 4px solid var(--success-green);">
+            <h3>Pending Join Requests (<%= team.joinRequests.length %>)</h3>
+            <% team.joinRequests.forEach(function(r) { %>
+              <% if (r.user) { %>
+                <div class="list-row">
+                  <div class="list-row__avatar"><%= r.user.name.charAt(0).toUpperCase() %></div>
+                  <div class="list-row__main">
+                    <div class="list-row__title"><%= r.user.name %></div>
+                    <div class="list-row__meta"><%= r.user.email %></div>
+                  </div>
+                  <div style="display: flex; gap: 8px;">
+                    <form action="/teams/<%= team._id %>/requests/<%= r._id %>/approve" method="POST">
+                      <button type="submit" class="btn btn-primary btn-sm">Approve</button>
+                    </form>
+                    <form action="/teams/<%= team._id %>/requests/<%= r._id %>/reject" method="POST">
+                      <button type="submit" class="btn btn-ghost btn-sm" style="color: var(--error-red); border-color: var(--error-red);">Reject</button>
+                    </form>
+                  </div>
+                </div>
+              <% } %>
+            <% }) %>
+          </div>
+        <% } %>
+
+        <div class="detail__card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-2);">
+            <h3 style="margin: 0;">Roster</h3>
+            <span style="color: var(--text-muted); font-size: 13px;"><%= team.players.length %> players</span>
+          </div>
+          <div class="roster">
+            <% team.players.forEach(function(p, idx) { %>
+              <div class="player">
+                <div class="player__number">#<%= idx + 1 %></div>
+                <div style="flex: 1;">
+                  <div class="player__name"><%= p.name %><% if (String(p._id) === String(team.captain._id)) { %> <span style="font-size: 10px; background: var(--finland-blue); color: white; padding: 2px 6px; border-radius: 999px; margin-left: 4px;">CAPTAIN</span><% } %></div>
+                  <div class="player__role"><%= p.email %></div>
+                </div>
+                <% if (isCaptain && String(p._id) !== String(team.captain._id)) { %>
+                  <form action="/teams/<%= team._id %>/players/<%= p._id %>/remove" method="POST" onsubmit="return confirm('Remove this player from the team?');">
+                    <button type="submit" class="btn btn-ghost btn-sm" aria-label="Remove player" style="color: var(--error-red); padding: 6px 10px;">
+                      <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                    </button>
+                  </form>
+                <% } %>
+              </div>
+            <% }) %>
+          </div>
+        </div>
+
+        <% if (team.tournaments && team.tournaments.length > 0) { %>
+          <div class="detail__card" style="margin-top: var(--space-3);">
+            <h3>Tournaments</h3>
+            <% team.tournaments.forEach(function(t) { %>
+              <a href="/tournaments/<%= t._id %>" class="list-row" style="text-decoration: none; color: inherit;">
+                <div class="list-row__avatar"><i class="fa-solid fa-trophy" aria-hidden="true"></i></div>
+                <div class="list-row__main">
+                  <div class="list-row__title"><%= t.title %></div>
+                  <div class="list-row__meta"><%= new Date(t.startDate).toLocaleDateString('en-GB') %> · <%= t.location %></div>
+                </div>
+                <span class="tournament-card__badge <%= t.status === 'Closing Soon' ? 'tournament-card__badge--warn' : '' %>" style="position: static;"><%= t.status %></span>
+              </a>
+            <% }) %>
+          </div>
+        <% } %>
+
+        <% if (isCaptain) { %>
+          <div class="detail__card" style="margin-top: var(--space-3); border-top: 4px solid var(--error-red);">
+            <h3>Captain Controls</h3>
+            <p style="margin-bottom: var(--space-2);">Delete this team. This cannot be undone.</p>
+            <form action="/teams/<%= team._id %>/delete" method="POST" onsubmit="return confirm('Delete team \'<%= team.name %>\'? This cannot be undone.');">
+              <button type="submit" class="btn btn-danger">
+                <i class="fa-solid fa-trash" aria-hidden="true"></i>
+                Delete Team
+              </button>
+            </form>
+          </div>
+        <% } %>
+      </div>
+    </section>
+  </main>
+
+  <%- include('../partials/footer') %>
+  <script src="/js/main.js" defer></script>
+</body>
+</html>
