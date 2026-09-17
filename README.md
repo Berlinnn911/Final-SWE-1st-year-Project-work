@@ -1,3 +1,4 @@
+HEAD
 # Finland Ice Hockey Tournament Registration Platform
 
 A web platform where players create teams, organizers create tournaments, and team captains register their teams for those tournaments.
@@ -396,3 +397,7 @@ Every source file in this project has a comment header at the top that names the
 ---
 
 ChatGPT was used to properly structure the contents of this document.
+=======
+# Final-SWE-1st-year-Project-work
+basic project for SWE
+>>>>>>> 5f444e8a15f8963c546b47efb2995382f5f8ccbc
